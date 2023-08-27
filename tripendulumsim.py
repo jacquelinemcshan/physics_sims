@@ -3,7 +3,7 @@ from numpy.linalg import inv
 from scipy.integrate import solve_ivp
 import plotly.graph_objects as go
 
-from dash import Dash, dcc, html, Input, Output, callback
+from dash import Dash, dcc, html, Input, Output, callback, ctx
 
 g=9.8
 
@@ -14,58 +14,122 @@ app = Dash(__name__, external_stylesheets=external_stylesheets)
 app.layout = html.Div([  
     html.H1(children='Triple Pendulum'),
     
-    dcc.Slider(0, 20, 0.1,
-               value=3,
-               id='mass1'
+    dcc.Slider(min=0, max=20, step=0.1, value=3, id='mass1'
+               ),
+    html.Div(id="mass1Val"),
+     dcc.Slider(value=3,
+            min=0, max=20, step=0.1, id="mass2",
+    ),
+    html.Div(id="mass2Val"),
+     dcc.Slider(value=3,
+            min=0, max=20, step=0.1, id="mass3",
+    ),
+    html.Div(id="mass3Val"),
+    dcc.Slider(
+            id="length1", value=3,
+            min=0, max=20, step=0.1,
+    ),
+    html.Div(id="length1Val"),
+    dcc.Slider(
+            id="length2", value=3,
+            min=0, max=20, step=0.1,
+    ),
+     html.Div(id="length2Val"),
+     dcc.Slider(
+            id="length3", value=3,
+            min=0, max=20, step=0.1,
     ),
     dcc.Slider(0, 20, 0.1,
-               value=2,
-               id='mass2'
-    ),
-    dcc.Slider(0, 20, 0.1,
-               value=1,
-               id='mass3'
-    ),
-    dcc.Slider(0, 20, 0.1,
-               value=3,
-               id='length1'
-    ),
-    dcc.Slider(0, 20, 0.1,
-               value=2,
-               id='length2'
-    ),
-    dcc.Slider(0, 20, 0.1,
-               value=1,
-               id='length3'
-    ),
-    dcc.Slider(0, 20, 0.1,
-               value=3,
+               value=3,  marks=None, 
+               tooltip={"placement": "bottom", "always_visible": True},
                id='ini1'
     ),
+    html.Div(id="ini1Val"),
     dcc.Slider(0, 20, 0.1,
-               value=2,
+               value=2,  marks=None, 
+               tooltip={"placement": "bottom", "always_visible": True},
                id='ini2'
     ),
+    html.Div(id="ini2Val"),
     dcc.Slider(-np.pi, np.pi, 0.01,
-               value=1,
+               value=1,  marks=None, 
+               tooltip={"placement": "bottom", "always_visible": True},
                id='ini3'
     ),
-
-    
-    dcc.Graph(id="graph")
+    html.Div(id="ini3Val"),
+     html.Button("Run", id="graph-button", n_clicks=0),
+     html.Div(id="pendulum-graph"),
 ])
+
+@app.callback(
+    [Output("mass1Val", "children")],
+    [Input('mass1', "value")]
+)
+def useInput1(m1):
+    return [m1]
+
+@callback(
+    Output("mass2Val", "children"),
+    Input('mass2', "value")
+)
+def useInput2(mass2):
+    m2=mass2
+    return m2
+
+@callback(
+    [Output("mass3Val", "children")],
+    [Input('mass3', "value")]
+)
+def useInput3(mass3):
+    m3=mass3
+    return m3
+@callback(
+    [Output("length1Val", "children")],
+    [Input('length1', "value")]
+)
+def useInput4(length1):
+    L1=length1
+    return L1
+
+@callback(
+    Output("length2Val", "children"),
+    Input('length2', "value")
+)
+def useInput5(length2):
+    L2=length2
+    return L2
+@callback(
+    Output("length3Val", "children"),
+    Input('length3', "value")
+)
+def useInput6(length3):
+    L3=length3
+    return L3
+
+@callback(
+    Output("ini1Val", "children"),
+    Input('ini1', "value")
+)
+def useInput7(ini1):
+    return ini1
+
+@callback(
+    Output("ini2Val", "children"),
+    Input('ini2', "value")
+)
+def useInput8(ini2):
+    return ini2
+@callback(
+    Output("in31Val", "children"),
+    Input('ini3', "value")
+)
+def useInput9(ini3):
+    return ini3
+
 
 def der_eq(t, y):
     
     theta1, omega1, theta2, omega2, theta3, omega3=y
-    m1=Input('mass1', 'value')
-    m2=Input('mass2', 'value')
-    m3=Input('mass3', 'value')
-    
-    L1=Input('length1', 'value')
-    L2=Input('length2', 'value')
-    L3=Input('length3', 'value')
-    
     M1=m1+m2+m3
     M2=m1+m3
     
@@ -100,17 +164,16 @@ def pendulum_solver(*args):
     tmax= 10
     dt=0.001
     t = np.arange(0, tmax, dt)
-    y0=[Input('ini1', 'value'), 0,Input('ini1', 'value'), 0, Input('ini3', 'value'), 0]
+    
     
     func=solve_ivp(der_eq, [0,tmax], y0, method='Radau',dense_output=True, t_eval=t)
     
     return(func)
 
-def pendulum_graph(*args):
-    
-    L1, L2, L3=Input('length1', 'value'), Input('length2', 'value'), Input('length3', 'value')
-    L=L1+L2+L3
-    
+
+
+
+def pendulum_graph(*args):    
     func=pendulum_solver()
     
     theta1, theta2, theta3 = func.y[0,:], func.y[2], func.y[4]
@@ -121,8 +184,24 @@ def pendulum_graph(*args):
     y2=y1-L2*np.cos(theta2)
     x3=x2+L3*np.sin(theta3)
     y3=y2-L3*np.cos(theta3)
+
+    positions=[theta1,theta2,theta3,x1,y1,x2,y2,x3,y3]
+    return(positions)
+
+graph_inputs=pendulum_graph()
+x1, x2, x3=graph_inputs[4], graph_inputs[6], graph_inputs[8]
+y1, y2, y3=graph_inputs[5], graph_inputs[7], graph_inputs[9]
     
-    fig = go.Figure(
+
+
+@callback(
+    Output("pendulum-graph", "children"),
+    Input("graph-button", "n_clicks"), 
+    prevent_initial_call=True,
+    )
+def run_graph(n):
+    if ctx.triggered_id == "graph-button":
+        fig = go.Figure(
     data=[go.Scatter(go.Scatter(x=x1, y=y1,
                     mode='lines',
                     name='mass 1')),
@@ -133,7 +212,7 @@ def pendulum_graph(*args):
                     mode='lines',
                     name='mass 3')),
           go.Scatter(
-            x=[0, x1, None, x1,x2, None, x2, x3],
+            x=[0, y1, None, y1,y2, None,y2, y3],
             y=[0, y1, None, y1,y2, None,y2, y3],
             mode="lines", showlegend=False),
           
@@ -168,10 +247,10 @@ def pendulum_graph(*args):
             marker=dict(color="green", size=5),)
             ])
 
-        for k in range(0, len(func.t), 3)]
+        for k in range(0, len(x1), 3)]
     )
-    return(fig)
-
-
+    fig.update_layout(height=600, width=600)
+    fig.show()
+    return dcc.Graph(figure=fig)
 if __name__ == '__main__':
     app.run(debug=True)

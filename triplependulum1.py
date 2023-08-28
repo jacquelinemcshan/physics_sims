@@ -157,9 +157,12 @@ def fetch_data_from_user_input(input_value, input_value2, input_value3, input_va
                                              marker=dict(color="blue", size=5)), 
                                 go.Scatter(x=[x2[k]],  y=[y2[k]], mode="markers", marker=dict(color="red", size=5),),
                                 go.Scatter(x=[x3[k]], y=[y3[k]], mode="markers",marker=dict(color="green", size=5),)
-                                  ])
+                                  ], name=str(k))
         for k in range(0, len(x1), 3)])
-        fig.update_layout(height=600, width=600)
+        fig.update_layout(height=600, width=600,
+                         
+            ),
+       
         fig.show()
         return dcc.Graph(figure=fig)
     

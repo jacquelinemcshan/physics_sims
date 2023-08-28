@@ -136,7 +136,8 @@ def fetch_data_from_user_input(input_value, input_value2, input_value3, input_va
     
     
     if ctx.triggered_id == "graph-button":
-        fig = go.Figure(data=[go.Scatter(go.Scatter(x=x1, y=y1, mode='lines', name='mass 1')),
+        fig = go.Figure(data=[go.Scatter(go.Scatter(
+            x=x1, y=y1, mode='lines', name='mass 1')),
                     go.Scatter(go.Scatter(x=x2, y=y2, mode='lines', name='mass 2')),
                     go.Scatter(go.Scatter(x=x3, y=y3, mode='lines', name='mass 3')),
                     go.Scatter(x=[0, y1, None, y1,y2, None,y2, y3],

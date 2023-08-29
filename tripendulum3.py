@@ -4,67 +4,86 @@ from scipy.integrate import solve_ivp
 import plotly.graph_objects as go
 
 from dash import Dash, dcc, html, Input, Output, callback, ctx
+import dash_bootstrap_components as dbc
 
 g=9.8
+time_step=5 #for animation frames
 
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
-app = Dash(__name__, external_stylesheets=external_stylesheets)
+app = Dash(__name__, external_stylesheets=[dbc.themes.LUX])
 
-app.layout = html.Div([  
-    html.H1(children='Triple Pendulum'),
+app.layout = html.Div(
     
-    dcc.Slider(value=3,
-    min=0, max=20, step=0.1, id='mass1',  marks=None,
-               tooltip={"placement": "bottom", "always_visible": True}
-               ),
-    
-     dcc.Slider(value=2,
-            min=0, max=20, step=0.1, id="mass2", marks=None,
-            tooltip={"placement": "bottom", "always_visible": True}
-    ),
-    
-     dcc.Slider(value=1,
-            min=0, max=20, step=0.1, id="mass3", marks=None,
-            tooltip={"placement": "bottom", "always_visible": True}
-    ),
-   
-    dcc.Slider(
-            id="length1", value=3,
-            min=0, max=20, step=0.1, marks=None,
-            tooltip={"placement": "bottom", "always_visible": True}
-    ),
-    
-    dcc.Slider(
-            id="length2", value=2,
-            min=0, max=20, step=0.1, marks=None,
-            tooltip={"placement": "bottom", "always_visible": True}
-    ),
-     
-     dcc.Slider(
-            id="length3", value=1,
-            min=0, max=20, step=0.1, marks=None,
-            tooltip={"placement": "bottom", "always_visible": True}
-    ),
-    dcc.Slider(value=1, min=-np.pi, max=np.pi, step=0.001, marks=None, 
-               tooltip={"placement": "bottom", "always_visible": True},
+    [ html.H1(children='Triple Pendulum'),
+        html.Div([
+            html.H3(children='Variables:'),
+            dbc.Row([dbc.Col(html.H4(children='Mass 1:'),width=4), dbc.Col(html.H4(children='Mass 2:'),width=4),
+                     dbc.Col(html.H4(children='Mass 3:'), width=4),
+                    ]), 
+             dbc.Row([
+                 dbc.Col(dcc.Slider(value=3,min=0, max=24, step=0.1, id='mass1', 
+                                    marks={i: '{}'.format(i) for i in range(0,24,4)},
+                 tooltip={"placement": "top", "always_visible": True}), width=4),
+                    
+                dbc.Col(dcc.Slider(value=2, min=0, max=24, step=0.1, id="mass2",
+                marks={i: '{}'.format(i) for i in range(0,24,4)},
+                tooltip={"placement": "top", "always_visible": True}),width=4),
+
+                dbc.Col(dcc.Slider(value=1, min=0, max=24, step=0.1, id="mass3",
+                marks={i: '{}'.format(i) for i in range(0,24,4)},
+                tooltip={"placement": "top", "always_visible": True}
+                ), width=4)]),
+            
+            dbc.Row([dbc.Col(html.H4(children='String Length 1:'),width=4), dbc.Col(html.H4(children='String Length 2:'), width=4),
+                     dbc.Col(html.H4(children='String Length 3:'), width=4)
+                    ]), 
+             dbc.Row([
+                dbc.Col(dcc.Slider( id="length1", value=3, min=0, max=24, step=0.1, 
+                                    marks={i: '{}'.format(i) for i in range(0,24,4)}, 
+                                    tooltip={"placement": "top", "always_visible": True}
+                            ), width=4),
+                    
+                dbc.Col(dcc.Slider(id="length2", value=2, min=0, max=24, step=0.1, 
+                                    marks={i: '{}'.format(i) for i in range(0,24,4)},
+                                    tooltip={"placement": "top", "always_visible": True}
+                            ), width=4),
+
+                dbc.Col(dcc.Slider( id="length3", value=1,min=0, max=24, step=0.1, 
+                                    marks={i: '{}'.format(i) for i in range(0,24,4)},
+                                    tooltip={"placement": "top", "always_visible": True}
+                            ), width=4)]),
+            dbc.Row([dbc.Col(html.H4(children='Starting Angle of Mass 1:'),width=4),
+                     dbc.Col(html.H4(children='Starting Angle of Mass 2:'),width=4),
+                     dbc.Col(html.H4(children='Starting Angle of Mass 3:'),width=4),]),
+
+            dbc.Row([dbc.Col(dcc.Slider(value=1, min=-np.pi, max=np.pi, step=0.001, 
+               marks={-np.pi: '-180°',-2*np.pi/3: '-120°',-np.pi/3: '-60°',
+                      0: '0°',
+                     np.pi/3:'60°', 2*np.pi/3: '120°'},  
+               tooltip={"placement": "top", "always_visible": True},
                id='ini1'
-    ),
-    
-    dcc.Slider(value=1, min=-np.pi, max=np.pi, step=0.001,  marks=None, 
-               tooltip={"placement": "bottom", "always_visible": True},
+                ), width=4),
+            dbc.Col(dcc.Slider(value=1, min=-np.pi, max=np.pi, step=0.001,  
+               marks={-np.pi: '-180°',-2*np.pi/3: '-120°',-np.pi/3: '-60°',
+                      0: '0°',
+                     np.pi/3:'60°', 2*np.pi/3: '120°'}, 
+               tooltip={"placement": "top", "always_visible": True},
                id='ini2'
-    ),
-    
-    dcc.Slider(value=1, min=-np.pi, max=np.pi, step=0.001,  marks=None, 
-               tooltip={"placement": "bottom", "always_visible": True},
-               id='ini3'
-    ),
-    
-    html.Button("Run", id="graph-button", n_clicks=0),
-    html.Div(id="user_inputs"),
-    html.Div(id="pendulum-graph"),
-])
+                ), width=4),
+            dbc.Col(dcc.Slider(value=1, min=-np.pi, max=np.pi, step=0.001,  
+               marks={-np.pi: '-180°',-2*np.pi/3: '-120°',-np.pi/3: '-60°',
+                      0: '0°',
+                     np.pi/3:'60°', 2*np.pi/3: '120°'}, 
+               tooltip={"placement": "top", "always_visible": True},
+               id='ini3' ), width=4),])
+        ]),
+        html.H3(children='Graph'),
+        html.Button("Run", id="graph-button", n_clicks=0),
+        html.Div(id="user_inputs"),
+        html.Div(id="pendulum-graph"),
+    ]
+    )  
 
 
 @app.callback(Output('user_inputs', 'children'),
@@ -134,7 +153,7 @@ def fetch_data_from_user_input(input_value, input_value2, input_value3, input_va
     x1, x2, x3=position[3], position[5], position[7]
     y1, y2, y3=position[4], position[6], position[8]
     
-    time_step=5
+    
     
     if ctx.triggered_id == "graph-button":
         fig = go.Figure(data=[go.Scatter(
@@ -163,10 +182,10 @@ def fetch_data_from_user_input(input_value, input_value2, input_value3, input_va
                  data=[go.Scatter(x=[0, x1[k], None,x1[k], x2[k], None, x2[k], x3[k]],
                                  y=[0, y1[k], None, y1[k], y2[k], None,y2[k], y3[k]], mode="lines", 
                                  line=dict(color="black", width=1)),
-                                go.Scatter(x=[x1[k]],y=[y1[k]],mode="markers",name='mass 1',
+                                go.Scatter(x=[x1[k]],y=[y1[k]],mode="markers",name='Mass 1',
                                              marker=dict(color="blue", size=5)), 
-                                go.Scatter(x=[x2[k]],  y=[y2[k]], name='mass 2',mode="markers", marker=dict(color="red", size=5),),
-                                go.Scatter(x=[x3[k]], y=[y3[k]], name='mass 3',mode="markers",marker=dict(color="green", size=5),)], 
+                                go.Scatter(x=[x2[k]],  y=[y2[k]], name='Mass 2',mode="markers", marker=dict(color="red", size=5),),
+                                go.Scatter(x=[x3[k]], y=[y3[k]], name='Mass 3',mode="markers",marker=dict(color="green", size=5),)], 
                                 name=str(k), 
                                 layout=go.Layout(annotations=[dict(xref="x domain", yref="y domain", x=1, y=1,
                                 showarrow=False, align='right',

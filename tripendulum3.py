@@ -11,79 +11,71 @@ time_step=5 #for animation frames
 
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
-app = Dash(__name__, external_stylesheets=[dbc.themes.LUX])
+app = Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
 
 app.layout = html.Div(
     
     [ html.H1(children='Triple Pendulum'),
-        html.Div([
+      html.Hr(),
+        dbc.Row([dbc.Col([html.Div([
             html.H3(children='Variables:'),
-            dbc.Row([dbc.Col(html.H4(children='Mass 1:'),width=4), dbc.Col(html.H4(children='Mass 2:'),width=4),
-                     dbc.Col(html.H4(children='Mass 3:'), width=4),
+            dbc.Row([dbc.Col(html.H5(children='Mass 1:'),width=6), dbc.Col(html.H5(children='Starting Angle of Mass 1:'),width=6),
                     ]), 
              dbc.Row([
                  dbc.Col(dcc.Slider(value=3,min=0, max=24, step=0.1, id='mass1', 
-                                    marks={i: '{}'.format(i) for i in range(0,24,4)},
-                 tooltip={"placement": "top", "always_visible": True}), width=4),
+                                    marks={i: '{} kg'.format(i) for i in range(0,24,4)},
+                 tooltip={"placement": "top", "always_visible": True}), width=6), 
+                 dbc.Col(dcc.Slider(value=np.rad2deg(np.pi/3), min=np.rad2deg(-np.pi), max=np.rad2deg(np.pi), step=0.001, 
+                    marks={np.rad2deg(-np.pi): '-180°',np.rad2deg(-2*np.pi/3): '-120°', np.rad2deg(-np.pi/3): '-60°',
+                      0: '0°',
+                     np.rad2deg(np.pi/3):'60°', np.rad2deg(2*np.pi/3):'120°'},  
+                    tooltip={"placement": "top", "always_visible": True},id='ini1'), width=6)]),
+            dbc.Row([dbc.Col(html.H5(children='Mass 2:'),width=6), 
+                     dbc.Col(html.H5(children='Starting Angle of Mass 2:'),width=6)]),
                     
-                dbc.Col(dcc.Slider(value=2, min=0, max=24, step=0.1, id="mass2",
-                marks={i: '{}'.format(i) for i in range(0,24,4)},
-                tooltip={"placement": "top", "always_visible": True}),width=4),
-
-                dbc.Col(dcc.Slider(value=1, min=0, max=24, step=0.1, id="mass3",
-                marks={i: '{}'.format(i) for i in range(0,24,4)},
+            dbc.Row([dbc.Col(dcc.Slider(value=2, min=0, max=24, step=0.1, id="mass2",
+                marks={i: '{} kg'.format(i) for i in range(0,24,4)},
+                tooltip={"placement": "top", "always_visible": True}),width=6),
+                dbc.Col(dcc.Slider(value=np.rad2deg(np.pi/3), min=np.rad2deg(-np.pi), max=np.rad2deg(np.pi), step=0.001, 
+                marks={np.rad2deg(-np.pi): '-180°',np.rad2deg(-2*np.pi/3): '-120°', np.rad2deg(-np.pi/3): '-60°',
+                      0: '0°',
+                     np.rad2deg(np.pi/3):'60°', np.rad2deg(2*np.pi/3):'120°'}, 
+                tooltip={"placement": "top", "always_visible": True},id='ini2'), width=6),
+                ]),
+            dbc.Row([ dbc.Col(html.H5(children='Mass 3:'), width=6), dbc.Col(html.H5(children='Starting Angle of Mass 3:'),width=6)]),
+            dbc.Row([dbc.Col(dcc.Slider(value=1, min=0, max=24, step=0.1, id="mass3",
+                marks={i: '{} kg'.format(i) for i in range(0,24,4)},
                 tooltip={"placement": "top", "always_visible": True}
-                ), width=4)]),
-            
-            dbc.Row([dbc.Col(html.H4(children='String Length 1:'),width=4), dbc.Col(html.H4(children='String Length 2:'), width=4),
-                     dbc.Col(html.H4(children='String Length 3:'), width=4)
-                    ]), 
-             dbc.Row([
-                dbc.Col(dcc.Slider( id="length1", value=3, min=0, max=24, step=0.1, 
-                                    marks={i: '{}'.format(i) for i in range(0,24,4)}, 
+                ), width=6),
+                dbc.Col(dcc.Slider(value=np.rad2deg(np.pi/3), min=np.rad2deg(-np.pi), max=np.rad2deg(np.pi), step=0.001, 
+                marks={np.rad2deg(-np.pi): '-180°',np.rad2deg(-2*np.pi/3): '-120°', np.rad2deg(-np.pi/3): '-60°',
+                      0: '0°',
+                     np.rad2deg(np.pi/3):'60°', np.rad2deg(2*np.pi/3):'120°'}, 
+                tooltip={"placement": "top", "always_visible": True},
+                id='ini3' ), width=6)]),
+            dbc.Row([dbc.Col(html.H5(children='String Length 1:'),width=6),]), 
+            dbc.Row([dbc.Col(dcc.Slider( id="length1", value=3, min=0, max=24, step=0.1, 
+                                    marks={i: '{} m'.format(i) for i in range(0,24,4)}, 
                                     tooltip={"placement": "top", "always_visible": True}
-                            ), width=4),
-                    
-                dbc.Col(dcc.Slider(id="length2", value=2, min=0, max=24, step=0.1, 
-                                    marks={i: '{}'.format(i) for i in range(0,24,4)},
-                                    tooltip={"placement": "top", "always_visible": True}
-                            ), width=4),
+                            ), width=6), ]),
 
-                dbc.Col(dcc.Slider( id="length3", value=1,min=0, max=24, step=0.1, 
-                                    marks={i: '{}'.format(i) for i in range(0,24,4)},
+            dbc.Row([ dbc.Col(html.H5(children='String Length 2:'), width=6),]),
+            dbc.Row([dbc.Col(dcc.Slider( id="length2", value=1,min=0, max=24, step=0.1, 
+                                    marks={i: '{} m'.format(i) for i in range(0,24,4)},
                                     tooltip={"placement": "top", "always_visible": True}
-                            ), width=4)]),
-            dbc.Row([dbc.Col(html.H4(children='Starting Angle of Mass 1:'),width=4),
-                     dbc.Col(html.H4(children='Starting Angle of Mass 2:'),width=4),
-                     dbc.Col(html.H4(children='Starting Angle of Mass 3:'),width=4),]),
-
-            dbc.Row([dbc.Col(dcc.Slider(value=1, min=-np.pi, max=np.pi, step=0.001, 
-               marks={-np.pi: '-180°',-2*np.pi/3: '-120°',-np.pi/3: '-60°',
-                      0: '0°',
-                     np.pi/3:'60°', 2*np.pi/3: '120°'},  
-               tooltip={"placement": "top", "always_visible": True},
-               id='ini1'
-                ), width=4),
-            dbc.Col(dcc.Slider(value=1, min=-np.pi, max=np.pi, step=0.001,  
-               marks={-np.pi: '-180°',-2*np.pi/3: '-120°',-np.pi/3: '-60°',
-                      0: '0°',
-                     np.pi/3:'60°', 2*np.pi/3: '120°'}, 
-               tooltip={"placement": "top", "always_visible": True},
-               id='ini2'
-                ), width=4),
-            dbc.Col(dcc.Slider(value=1, min=-np.pi, max=np.pi, step=0.001,  
-               marks={-np.pi: '-180°',-2*np.pi/3: '-120°',-np.pi/3: '-60°',
-                      0: '0°',
-                     np.pi/3:'60°', 2*np.pi/3: '120°'}, 
-               tooltip={"placement": "top", "always_visible": True},
-               id='ini3' ), width=4),])
-        ]),
-        html.H3(children='Graph'),
-        html.Button("Run", id="graph-button", n_clicks=0),
+                            ), width=6)]),
+            dbc.Row([dbc.Col(html.H5(children='String Length 3:'), width=6)]), 
+            dbc.Row(dbc.Col(dcc.Slider( id="length3", value=1,min=0, max=24, step=0.1, 
+                                    marks={i: '{} m'.format(i) for i in range(0,24,4)},
+                                    tooltip={"placement": "top", "always_visible": True}
+                            ), width=6))
+        ])], width=6),
+        dbc.Col([html.Div([html.H3(children='Graph:'),
+        html.Button("Generate Graph", id="graph-button", n_clicks=0),
         html.Div(id="user_inputs"),
-        html.Div(id="pendulum-graph"),
+        html.Div(id="pendulum-graph"),])], width=6)
     ]
-    )  
+    )])  
 
 
 @app.callback(Output('user_inputs', 'children'),
@@ -97,7 +89,7 @@ def fetch_data_from_user_input(input_value, input_value2, input_value3, input_va
     
     m1,m2,m3=input_value,input_value2, input_value3
     L1,L2,L3=input_value4,input_value5, input_value6
-    ini1,ini2,ini3=input_value7,input_value8, input_value9
+    ini1,ini2,ini3=np.deg2rad(input_value7),np.deg2rad(input_value8), np.deg2rad(input_value9)
     M1=m1+m2+m3
     M2=m1+m2
     L=L1+L2+L3
@@ -139,7 +131,6 @@ def fetch_data_from_user_input(input_value, input_value2, input_value3, input_va
     def pendulum_graph(*args): 
         func=pendulum_solver()
         theta1, theta2, theta3 = func.y[0,:], func.y[2], func.y[4]
-        
         x1=L1*np.sin(theta1)
         y1=-L1*np.cos(theta1)
         x2=x1+L2*np.sin(theta2)
@@ -177,7 +168,8 @@ def fetch_data_from_user_input(input_value, input_value2, input_value3, input_va
                   title_text='Position Graph of a Triple Pendulum', hovermode="closest", 
                   
                   updatemenus=[dict(type="buttons", buttons=[dict(label="Play", method="animate", 
-                                                                  args=[None, {"frame": {"duration": 90, "redraw": False},}])])]),
+                                                                  args=[None, {"frame": {"duration": 90, "redraw": False},}])])],
+                  ),
         frames=[go.Frame(
                  data=[go.Scatter(x=[0, x1[k], None,x1[k], x2[k], None, x2[k], x3[k]],
                                  y=[0, y1[k], None, y1[k], y2[k], None,y2[k], y3[k]], mode="lines", 
@@ -193,9 +185,12 @@ def fetch_data_from_user_input(input_value, input_value2, input_value3, input_va
                                   )
         for k in range(0, len(x1), time_step)
         ],)
-        fig.update_layout(height=600, width=600)
+        fig.update_layout(height=600, width=600, 
+            title_font_size=23, title_x=0.48,title_xanchor='center', 
+            title_y=0.87, title_yanchor='bottom')
         fig.update_xaxes(title_text='Position (m)')
         fig.update_yaxes(title_text='Position (m)')
+
         fig.show()
         return dcc.Graph(figure=fig)
     

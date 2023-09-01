@@ -25,7 +25,7 @@ app.layout = html.Div(
                  dbc.Col(dcc.Slider(value=3,min=0, max=24, step=0.1, id='mass1', 
                                     marks={i: '{} kg'.format(i) for i in range(0,24,4)},
                  tooltip={"placement": "top", "always_visible": True}), width=6), 
-                 dbc.Col(dcc.Slider(value=np.rad2deg(np.pi/3), min=np.rad2deg(-np.pi), max=np.rad2deg(np.pi), step=0.001, 
+                 dbc.Col(dcc.Slider(value=np.rad2deg(np.pi/3), min=np.rad2deg(-np.pi), max=np.rad2deg(np.pi), step=0.01, 
                     marks={np.rad2deg(-np.pi): '-180°',np.rad2deg(-2*np.pi/3): '-120°', np.rad2deg(-np.pi/3): '-60°',
                       0: '0°',
                      np.rad2deg(np.pi/3):'60°', np.rad2deg(2*np.pi/3):'120°'},  
@@ -36,7 +36,7 @@ app.layout = html.Div(
             dbc.Row([dbc.Col(dcc.Slider(value=2, min=0, max=24, step=0.1, id="mass2",
                 marks={i: '{} kg'.format(i) for i in range(0,24,4)},
                 tooltip={"placement": "top", "always_visible": True}),width=6),
-                dbc.Col(dcc.Slider(value=np.rad2deg(np.pi/3), min=np.rad2deg(-np.pi), max=np.rad2deg(np.pi), step=0.001, 
+                dbc.Col(dcc.Slider(value=np.rad2deg(np.pi/3), min=np.rad2deg(-np.pi), max=np.rad2deg(np.pi), step=0.01, 
                 marks={np.rad2deg(-np.pi): '-180°',np.rad2deg(-2*np.pi/3): '-120°', np.rad2deg(-np.pi/3): '-60°',
                       0: '0°',
                      np.rad2deg(np.pi/3):'60°', np.rad2deg(2*np.pi/3):'120°'}, 
@@ -47,7 +47,7 @@ app.layout = html.Div(
                 marks={i: '{} kg'.format(i) for i in range(0,24,4)},
                 tooltip={"placement": "top", "always_visible": True}
                 ), width=6),
-                dbc.Col(dcc.Slider(value=np.rad2deg(np.pi/3), min=np.rad2deg(-np.pi), max=np.rad2deg(np.pi), step=0.001, 
+                dbc.Col(dcc.Slider(value=np.rad2deg(np.pi/3), min=np.rad2deg(-np.pi), max=np.rad2deg(np.pi), step=0.01, 
                 marks={np.rad2deg(-np.pi): '-180°',np.rad2deg(-2*np.pi/3): '-120°', np.rad2deg(-np.pi/3): '-60°',
                       0: '0°',
                      np.rad2deg(np.pi/3):'60°', np.rad2deg(2*np.pi/3):'120°'}, 
@@ -121,7 +121,7 @@ def fetch_data_from_user_input(input_value, input_value2, input_value3, input_va
         return dtheta1, domega1, dtheta2, domega2,  dtheta3, domega3
     def pendulum_solver(*args):
         tmax= 10
-        dt=0.001
+        dt=0.005
         t = np.arange(0, tmax, dt)
         y0=[ini1, 0,ini2, 0, ini3, 0]
         
@@ -181,11 +181,11 @@ def fetch_data_from_user_input(input_value, input_value2, input_value3, input_va
                                 name=str(k), 
                                 layout=go.Layout(annotations=[dict(xref="x domain", yref="y domain", x=1, y=1,
                                 showarrow=False, align='right',
-                                text='<b>'+'Time:'+ ' ' + "%.2f" % round(k*0.001, 2)+' '+ 'seconds''</b>'),])
+                                text='<b>'+'Time:'+ ' ' + "%.2f" % round(k*0.005, 2)+' '+ 'seconds''</b>'),])
                                   )
         for k in range(0, len(x1), time_step)
         ],)
-        fig.update_layout(height=600, width=600, 
+        fig.update_layout(height=700, width=700, 
             title_font_size=23, title_x=0.48,title_xanchor='center', 
             title_y=0.87, title_yanchor='bottom')
         fig.update_xaxes(title_text='Position (m)')

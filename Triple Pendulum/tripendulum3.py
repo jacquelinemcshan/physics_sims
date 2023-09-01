@@ -120,7 +120,7 @@ def fetch_data_from_user_input(input_value, input_value2, input_value3, input_va
         
         return dtheta1, domega1, dtheta2, domega2,  dtheta3, domega3
     def pendulum_solver(*args):
-        tmax= 10
+        tmax= 10.5
         dt=0.005
         t = np.arange(0, tmax, dt)
         y0=[ini1, 0,ini2, 0, ini3, 0]

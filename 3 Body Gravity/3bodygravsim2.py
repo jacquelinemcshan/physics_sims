@@ -238,9 +238,9 @@ def graph_generator(data, n):
            
            fig = go.Figure(data=[go.Scatter3d(x=xa, y=ya, z=za, 
                                               text = time,
-                                              hovertemplate ='<i>x</i>: %{x:.6f} m <br>'+
-                                              '<i>y</i>: %{y:.6f} m <br>'+
-                                              '<i>z</i>: %{z:.6f} m <br>'+ 
+                                              hovertemplate ='<i>x</i>: %{x:.3f} m <br>'+
+                                              '<i>y</i>: %{y:.3f} m <br>'+
+                                              '<i>z</i>: %{z:.3f} m <br>'+ 
                                               '<i>time</i>: %{text:f} s',
                         mode='markers',  name= "Mass 1", marker=dict(colorscale = 'Purp', 
                             cmin = 1000, color = time, cmax = max(time),
@@ -249,9 +249,9 @@ def graph_generator(data, n):
                             size=5), showlegend=False),
                         go.Scatter3d(x=xb, y=yb, z=zb,  
                                        text = time,
-                                              hovertemplate ='<i>x</i>: %{x:.6f} m <br>'+
-                                              '<i>y</i>: %{y:.6f} m <br>'+
-                                              '<i>z</i>: %{z:.6f} m <br>'+ 
+                                              hovertemplate ='<i>x</i>: %{x:.3f} m <br>'+
+                                              '<i>y</i>: %{y:.3f} m <br>'+
+                                              '<i>z</i>: %{z:.3f} m <br>'+ 
                                               '<i>time</i>: %{text:f} s',
                         mode='markers', name= "Mass 2", marker=dict(colorscale = 'Burg', 
                                 cmin = 1000, color = time, cmax = max(time),
@@ -260,9 +260,9 @@ def graph_generator(data, n):
                                                               size=5), showlegend=False),
            go.Scatter3d(x=xc, y=yc, z=zc, 
                         text = time,
-                          hovertemplate ='<i>x</i>: %{x:.6f} m <br>'+
-                                              '<i>y</i>: %{y:.6f} m <br>'+
-                                              '<i>z</i>: %{z:.6f} m <br>'+ 
+                          hovertemplate ='<i>x</i>: %{x:.3f} m <br>'+
+                                              '<i>y</i>: %{y:.3f} m <br>'+
+                                              '<i>z</i>: %{z:.3f} m <br>'+ 
                                               '<i>time</i>: %{text:f} s',
                                               
                   mode='markers', name= "Mass 3", marker=dict(colorscale = 'Tealgrn', 

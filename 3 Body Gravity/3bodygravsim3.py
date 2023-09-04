@@ -288,24 +288,27 @@ def graph_generator(data, n):
                                               hovertemplate ='<i>x</i>: %{x:.3f} m <br>'+
                                               '<i>y</i>: %{y:.3f} m <br>'+
                                               '<i>z</i>: %{z:.3f} m <br>',
-                    mode='markers', marker=dict(size=3, colorscale = 'Purp', 
-                            cmin = 1000, color = [time[k]], cmax =time_max),
+                    mode='markers', marker=dict(size=5, colorscale = 'Purp', 
+                            cmin = 1000, color = [time[k]], cmax =time_max, line=dict(width=2,
+                                        color='black')),
                     name='Mass 1'), 
                     
                     go.Scatter3d(x=[xb[k]], y=[yb[k]], z=[zb[k]],
                                    hovertemplate ='<i>x</i>: %{x:.3f} m <br>'+ 
                                      '<i>y</i>: %{y:.3f} m <br>'+
                                      '<i>z</i>: %{z:.3f} m <br>',
-                    mode='markers', marker=dict(size=3,colorscale = 'Burg', 
-                            cmin = 1000, color = [time[k]], cmax = time_max),
+                    mode='markers', marker=dict(size=5,colorscale = 'Burg', 
+                            cmin = 1000, color = [time[k]], cmax = time_max, line=dict(width=2,
+                                        color='black')),
                     name='Mass 2'), 
                     go.Scatter3d(x=[xc[k]], y=[yc[k]], z=[zc[k]],
                                    hovertemplate ='<i>x</i>: %{x:.3f} m <br>'+
                                               '<i>y</i>: %{y:.3f} m <br>'+
                                               '<i>z</i>: %{z:.3f} m <br>',
-                    mode='markers', marker=dict(size=3,
+                    mode='markers', marker=dict(size=5,
                     colorscale = 'Tealgrn', 
-                            cmin = 1000, color = [time[k]], cmax = time_max), name='Mass 3')],
+                            cmin = 1000, color = [time[k]], cmax = time_max, line=dict(width=2,
+                                        color='black')), name='Mass 3')],
                                                     name=str(k))
                                                     for k in range(0,len(time),5)]
            fig.update(frames=frames)

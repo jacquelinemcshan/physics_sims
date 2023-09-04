@@ -5,7 +5,7 @@ from datetime import timedelta
 
 import plotly.graph_objects as go
 
-from dash import Dash, dcc, html, Input, Output, callback, ctx
+from dash import Dash, dcc, html, Input, Output, callback, ctx, State
 import dash_bootstrap_components as dbc
 
 app = Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
@@ -105,8 +105,9 @@ dbc.Row([
                   
 graph_layout=html.Div([
     html.H3(children='Graph:'),
-        html.Button("Generate Graph", id="graph-button", n_clicks=0),
-        html.Div(id="user_inputs"),
+    html.Div(html.Button("Calculate", id="simul-button", n_clicks=0)),
+    html.Div(html.Button("Generate Graph", id="graph-button", n_clicks=0)),
+        html.Div(id="graph_gen"),
         ]
         )
 
@@ -128,14 +129,16 @@ app.layout = dbc.Container(
             ],
             align="center",
         ),
+     html.Div(dcc.Store(id='intermediate-value')),
     ],
     fluid=True,
+   
 )
 #http://dash-bootstrap-components.opensource.faculty.ai/examples/iris/
 
 G=6.674**(-11)
 
-@app.callback(Output('user_inputs', 'children'),
+@app.callback(Output('intermediate-value', 'data'),
               [Input( 'm1_mass', 'value'), Input( 'm2_mass', 'value'),Input( 'm3_mass', 'value'),
                Input( 'm1_x_pos', 'value'), Input( 'm1_y_pos', 'value'),Input( 'm1_z_pos', 'value'),
                Input( 'm1_x_vel', 'value'), Input( 'm1_y_vel', 'value'),Input( 'm1_z_vel', 'value'), 
@@ -143,7 +146,7 @@ G=6.674**(-11)
                Input( 'm2_x_vel', 'value'), Input( 'm2_y_vel', 'value'),Input( 'm2_z_vel', 'value'),
                Input( 'm3_x_pos', 'value'), Input( 'm3_y_pos', 'value'),Input( 'm3_z_pos', 'value'),
                Input( 'm3_x_vel', 'value'), Input( 'm3_y_vel', 'value'),Input( 'm3_z_vel', 'value'), 
-               Input("graph-button", "n_clicks")])
+               Input("simul-button", "n_clicks")])
 def fetch_data_from_user_input(m1_mass, m2_mass, m3_mass, m1_x_pos, m1_y_pos, m1_z_pos,m1_x_vel, m1_y_vel, m1_z_vel,
                               m2_x_pos, m2_y_pos, m2_z_pos,m2_x_vel, m2_y_vel, m2_z_vel, 
                               m3_x_pos, m3_y_pos, m3_z_pos,m3_x_vel, m3_y_vel, m3_z_vel, n):
@@ -220,35 +223,101 @@ def fetch_data_from_user_input(m1_mass, m2_mass, m3_mass, m1_x_pos, m1_y_pos, m1
         
         time=solved_func.t[::step]
 
-        if ctx.triggered_id == "graph-button":
-             fig = go.Figure(frames=[go.Frame(data=[go.Scatter3d(x=[xa[k]], y=[ya[k]], z=[za[k]],
-                    mode='markers', marker=dict(size=3),
-                    name='mass 1'), go.Scatter3d(x=[xb[k]], y=[yb[k]], z=[zb[k]],
-                    mode='markers', marker=dict(size=3),
-                    name='mass 2'), go.Scatter3d(x=[xc[k]], y=[yc[k]], z=[zc[k]],
-                    mode='markers', marker=dict(size=3), name='mass 3')],
+        data =np.array([xa, ya, za, xb, yb, zb, xc,yc, zc, time])
+        
+        return(data)
+
+@app.callback(Output('graph_gen', 'children'), [Input('intermediate-value', 'data'),Input("graph-button", "n_clicks")])
+def graph_generator(data, n):
+      xa,ya,za=data[0], data[1], data[2]
+      xb,yb,zb=data[3], data[4], data[5]
+      xc,yc,zc=data[6], data[7], data[8]
+      time=data[9]
+
+      x_max=max([max(xa), max(xb), max(xc)])
+      x_min=min([min(xa), min(xb), min(xc)])
+
+      y_max=max([max(ya), max(yb), max(yc)])
+      y_min=min([min(ya), min(yb), min(yc)])
+
+      z_max=max([max(za), max(zb), max(zc)])
+      z_min=min([min(za), min(zb), min(zc)])
+      
+      time_max=max(time)
+      
+
+
+      if ctx.triggered_id == "graph-button":
+           
+           fig = go.Figure(data=[go.Scatter3d(x=xa, y=ya, z=za, 
+                                              text = time,
+                                              hovertemplate ='<i>x</i>: %{x:.3f} m <br>'+
+                                              '<i>y</i>: %{y:.3f} m <br>'+
+                                              '<i>z</i>: %{z:.3f} m <br>'+ 
+                                              '<i>time</i>: %{text:f} s',
+                        mode='markers',  name= "Mass 1", marker=dict(colorscale = 'Purp', 
+                            cmin = 1000, color = time, cmax = time_max,
+                         colorbar=dict(orientation='v',x=0.8, xref="container", title="Mass 1 <br> Over Time <br> (s)"
+    ),
+                            size=3), showlegend=False),
+                        go.Scatter3d(x=xb, y=yb, z=zb,  
+                                       text = time,
+                                              hovertemplate ='<i>x</i>: %{x:.3f} m <br>'+
+                                              '<i>y</i>: %{y:.3f} m <br>'+
+                                              '<i>z</i>: %{z:.3f} m <br>'+ 
+                                              '<i>time</i>: %{text:f} s',
+                        mode='markers', name= "Mass 2", marker=dict(colorscale = 'Burg', 
+                                cmin = 1000, color = time, cmax = time_max,
+                        colorbar=dict(orientation='v',x=0.9, xref="container", title="Mass 2 <br> Over Time <br> (s)"
+    ),
+                                                              size=3), showlegend=False),
+           go.Scatter3d(x=xc, y=yc, z=zc, 
+                        text = time,
+                          hovertemplate ='<i>x</i>: %{x:.3f} m <br>'+
+                                              '<i>y</i>: %{y:.3f} m <br>'+
+                                              '<i>z</i>: %{z:.3f} m <br>'+ 
+                                              '<i>time</i>: %{text:f} s',
+                                              
+                  mode='markers', name= "Mass 3", marker=dict(colorscale = 'Tealgrn', 
+                            cmin = 1000, color = time, cmax = time_max,
+                    colorbar=dict(orientation='v',x=1, xref="container", title="Mass 3 <br> Over Time <br> (s)"
+    ),        
+                            size=3), showlegend=False)])
+           
+           frames=[go.Frame(data=[go.Scatter3d(x=[xa[k]], y=[ya[k]], z=[za[k]],
+                                              hovertemplate ='<i>x</i>: %{x:.3f} m <br>'+
+                                              '<i>y</i>: %{y:.3f} m <br>'+
+                                              '<i>z</i>: %{z:.3f} m <br>',
+                    mode='markers', marker=dict(size=3, colorscale = 'Purp', 
+                            cmin = 1000, color = time, cmax = max(time)),
+                    name='Mass 1'), 
+                    
+                    go.Scatter3d(x=[xb[k]], y=[yb[k]], z=[zb[k]],
+                                   hovertemplate ='<i>x</i>: %{x:.3f} m <br>'+ 
+                                     '<i>y</i>: %{y:.3f} m <br>'+
+                                     '<i>z</i>: %{z:.3f} m <br>',
+                    mode='markers', marker=dict(size=3,colorscale = 'Burg', 
+                            cmin = 1000, color = time, cmax = max(time)),
+                    name='Mass 2'), 
+                    go.Scatter3d(x=[xc[k]], y=[yc[k]], z=[zc[k]],
+                                   hovertemplate ='<i>x</i>: %{x:.3f} m <br>'+
+                                              '<i>y</i>: %{y:.3f} m <br>'+
+                                              '<i>z</i>: %{z:.3f} m <br>',
+                    mode='markers', marker=dict(size=3,
+                    colorscale = 'Tealgrn', 
+                            cmin = 1000, color = [time[k]], cmax = time_max), name='Mass 3')],
                                                     name=str(k))
-                                                    for k in range(len(time))])
-                                                    
-             fig.add_trace(go.Scatter3d(x=xa, y=ya, z=za,
-                    mode='markers', marker=dict(size=3), name='mass 1'))
-             
-             fig.add_trace( go.Scatter3d(x=xb, y=yb, z=zb,
-                    mode='markers', marker=dict(size=3),
-                    name='mass 2'))
-             
-             fig.add_trace(go.Scatter3d(x=xc, y=yc, z=zc,
-                    mode='markers', marker=dict(size=3), name='mass 3'))
-             
-             def frame_args(duration):
+                                                    for k in range(0,len(time),5)]
+           fig.update(frames=frames)
+           def frame_args(duration):
                   return {
                        "frame": {"duration": duration},
                          "mode": "immediate",
                            "fromcurrent": True,
                            "transition": {"duration": duration, "easing": "linear"},
                            }
-             sliders = [
-                  {
+           sliders = [
+                    {
                         "pad": {"b": 10, "t": 60},
                         "len": 0.9,
                          "x": 0.1,
@@ -260,17 +329,22 @@ def fetch_data_from_user_input(m1_mass, m2_mass, m3_mass, m1_x_pos, m1_y_pos, m1
                                 "method": "animate",
                         }
                         for k, f in enumerate(fig.frames)
-                    ],
-                }
-                ]
+                         ],
+                     }
+                    ]
 
-             fig.update_layout(
-                   title='3 Body Gravitational Problem',
-                     width=600,
-                     height=600,
+           fig.update_layout(title='3 Body Gravitational Problem',
+                     width=900,
+                     height=800,
                      scene=dict(
-                          aspectmode='cube'),
-                    updatemenus = [
+                          aspectmode='cube',
+                          xaxis_title='x position (m)',
+                          yaxis_title='y position (m)',
+                              zaxis_title='z position (m)',
+                              xaxis=dict(range=[x_min-1, x_max+1], autorange=False),
+                               yaxis=dict(range=[y_min-1, y_max+1], autorange=False),
+                               zaxis=dict(range=[z_min-1, z_max+1], autorange=False)),
+                              updatemenus = [
                     {
                      "buttons": [
                         {
@@ -286,16 +360,11 @@ def fetch_data_from_user_input(m1_mass, m2_mass, m3_mass, m1_x_pos, m1_y_pos, m1
                      "y": 0,
                     }
                  ],
-                sliders=sliders
-                )
-
-             fig.show()
-             return dcc.Graph(figure=fig)
-
-
-
-
-    
+                sliders=sliders)
+           
+           fig.show()
+           return dcc.Graph(figure=fig)
 
 if __name__ == '__main__':
+    app.run(debug=True)
     app.run(debug=True)

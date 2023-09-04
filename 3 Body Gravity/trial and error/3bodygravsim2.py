@@ -214,7 +214,7 @@ def fetch_data_from_user_input(m1_mass, m2_mass, m3_mass, m1_x_pos, m1_y_pos, m1
        
         solved_func=grav_body_solver()
         
-        step=500
+        step=5000
         
         xa, ya, za=solved_func.y[0][::step], solved_func.y[2][::step], solved_func.y[4][::step]
         xb, yb, zb=solved_func.y[6][::step], solved_func.y[8][::step], solved_func.y[10][::step]

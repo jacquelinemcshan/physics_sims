@@ -324,7 +324,7 @@ def graph_generator(data, n):
                         "y": 0,
                         "steps": [
                         {
-                                "args": [[f.name], frame_args(0)],
+                                "args": [[f.name], frame_args(5)],
                                 "label": "{} s".format(time[k]),
                                 "method": "animate",
                         }
@@ -334,7 +334,7 @@ def graph_generator(data, n):
                     ]
 
            fig.update_layout(title='3 Body Gravitational Problem',
-                     width=900,
+                     width=1000,
                      height=800,
                      scene=dict(
                           aspectmode='cube',
@@ -367,4 +367,4 @@ def graph_generator(data, n):
 
 if __name__ == '__main__':
     app.run(debug=True)
-    app.run(debug=True)
+   

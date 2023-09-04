@@ -289,7 +289,7 @@ def graph_generator(data, n):
                                               '<i>y</i>: %{y:.3f} m <br>'+
                                               '<i>z</i>: %{z:.3f} m <br>',
                     mode='markers', marker=dict(size=3, colorscale = 'Purp', 
-                            cmin = 1000, color = time, cmax = max(time)),
+                            cmin = 1000, color = [time[k]], cmax =time_max),
                     name='Mass 1'), 
                     
                     go.Scatter3d(x=[xb[k]], y=[yb[k]], z=[zb[k]],
@@ -297,7 +297,7 @@ def graph_generator(data, n):
                                      '<i>y</i>: %{y:.3f} m <br>'+
                                      '<i>z</i>: %{z:.3f} m <br>',
                     mode='markers', marker=dict(size=3,colorscale = 'Burg', 
-                            cmin = 1000, color = time, cmax = max(time)),
+                            cmin = 1000, color = [time[k]], cmax = time_max),
                     name='Mass 2'), 
                     go.Scatter3d(x=[xc[k]], y=[yc[k]], z=[zc[k]],
                                    hovertemplate ='<i>x</i>: %{x:.3f} m <br>'+

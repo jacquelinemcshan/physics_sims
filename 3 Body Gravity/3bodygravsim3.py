@@ -336,7 +336,7 @@ def graph_generator(data, n):
                      }
                     ]
 
-           fig.update_layout(title='3 Body Gravitational Problem',
+           fig.update_layout(title='Position Graph of Three Masses',
                      width=1000,
                      height=800,
                      scene=dict(

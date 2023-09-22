@@ -8,12 +8,12 @@ import plotly.graph_objects as go
 from dash import Dash, dcc, html, Input, Output, callback, ctx, State
 import dash_bootstrap_components as dbc
 
-app = Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
+app = Dash(__name__, external_stylesheets=[dbc.themes.LUX])
 
 masses_in_col_size=3
 
 
-mass_1_input= html.Div([html.H3(children='Mass 1'), 
+mass_1_input= dbc.AccordionItem([ 
     html.Div([
         dbc.Row(html.H4(children="Mass (kg)")),
         dbc.Row(dcc.Input(id='m1_mass', type='number', min=1, max=500, step=0.1, value=60))]),
@@ -43,11 +43,10 @@ mass_1_input= html.Div([html.H3(children='Mass 1'),
         dbc.Col(dcc.Input(id='m1_z_vel', type='number', min=-5, max=5, step=0.000001, value=0.00007), width=masses_in_col_size),
         ])
     ])
-])
+], title= "Mass 1")
          
 
-mass_2_input= html.Div([
-    html.H3(children='Mass 2'), 
+mass_2_input= dbc.AccordionItem([ 
     html.Div([
         dbc.Row(html.H4(children="Mass (kg)")),
         dbc.Row(dcc.Input(id='m2_mass', type='number', min=1, max=500, step=0.1, value=300))
@@ -75,9 +74,9 @@ dbc.Row([
     dbc.Col(dcc.Input(id='m2_x_vel', type='number', min=-5, max=5, step=0.000001, value=0), width=masses_in_col_size),
     dbc.Col(dcc.Input(id='m2_y_vel', type='number', min=-5, max=5, step=0.000001, value=0), width=masses_in_col_size),
     dbc.Col(dcc.Input(id='m2_z_vel', type='number', min=-5, max=5, step=0.000001, value=0), width=masses_in_col_size),
-    ])])
+    ])], title="Mass 2")
 
-mass_3_input= html.Div([html.H3(children='Mass 3'), 
+mass_3_input= dbc.AccordionItem([ 
 dbc.Row(html.H4(children="Mass (kg)")),
 dbc.Row(dcc.Input(id='m3_mass', type='number', min=1, max=500, step=0.1, value=80)),
 dbc.Row(html.H4(children="Initial Position (m)")),
@@ -101,44 +100,40 @@ dbc.Row([
     dbc.Col(dcc.Input(id='m3_x_vel', type='number', min=-5, max=5, step=0.000001, value=-0.00009),width=masses_in_col_size),
     dbc.Col(dcc.Input(id='m3_y_vel', type='number', min=-5, max=5, step=0.000001, value=0.00001), width=masses_in_col_size),
     dbc.Col(dcc.Input(id='m3_z_vel', type='number', min=-5, max=5, step=0.000001, value=0), width=masses_in_col_size),
-    ])])
+    ])], title="Mass 3")
                   
-graph_layout=html.Div([
-    html.H3(children='Graph:'),
-    html.Div(html.Button("Calculate", id="simul-button", n_clicks=0)),
-    html.Div(html.Button("Generate Graph", id="graph-button", n_clicks=0)),
-        html.Div(id="graph_gen"),
-        ]
+graph_layout= dbc.Card([dbc.CardHeader(html.H3(children="Graph of the Three Body Problem")),
+    dbc.CardBody([
+    html.Div(dbc.Button("Generate Graph", className="me-1", id="graph-button", n_clicks=0)),
+        html.Div(id="graph_gen")])], class_name="min-vh-90 flex-grow-1"
         )
 
-
-ui_layout=dbc.Card(
-    dbc.CardBody([mass_1_input,mass_2_input,mass_3_input]))
+ui_layout=dbc.Card([dbc.CardHeader(html.H3(children="Variables")),
+    dbc.CardBody(dbc.Accordion([mass_1_input,mass_2_input,mass_3_input], always_open=True, class_name="flex-grow-1 overflow-scroll mb-3", style={"maxHeight": "75vh"}))])
 
 
 
 
 app.layout = dbc.Container(
     [
-        html.H1("3 Body Gravitional Problem"),
-        html.Hr(),
+        html.H1("3 Body Gravitional Problem", className="pt-2"),
         dbc.Row(
             [
-                dbc.Col(ui_layout, width=4),
-                dbc.Col(graph_layout, width=8),
+                dbc.Col(ui_layout, width=4, align="start"),
+                dbc.Col(graph_layout, width=7, align="start"),
             ],
-            align="center",
+            align="center"
         ),
-     html.Div(dcc.Store(id='intermediate-value')),
-    ],
-    fluid=True,
+     
+     ],
+    fluid=True, class_name="mb-3", style={"padding-bottom": "140px"}
    
 )
 #http://dash-bootstrap-components.opensource.faculty.ai/examples/iris/
 
 G=6.674**(-11)
 
-@app.callback(Output('intermediate-value', 'data'),
+@app.callback(Output('graph_gen', 'children'),
               [Input( 'm1_mass', 'value'), Input( 'm2_mass', 'value'),Input( 'm3_mass', 'value'),
                Input( 'm1_x_pos', 'value'), Input( 'm1_y_pos', 'value'),Input( 'm1_z_pos', 'value'),
                Input( 'm1_x_vel', 'value'), Input( 'm1_y_vel', 'value'),Input( 'm1_z_vel', 'value'), 
@@ -146,8 +141,8 @@ G=6.674**(-11)
                Input( 'm2_x_vel', 'value'), Input( 'm2_y_vel', 'value'),Input( 'm2_z_vel', 'value'),
                Input( 'm3_x_pos', 'value'), Input( 'm3_y_pos', 'value'),Input( 'm3_z_pos', 'value'),
                Input( 'm3_x_vel', 'value'), Input( 'm3_y_vel', 'value'),Input( 'm3_z_vel', 'value'), 
-               Input("simul-button", "n_clicks")])
-def fetch_data_from_user_input(m1_mass, m2_mass, m3_mass, m1_x_pos, m1_y_pos, m1_z_pos,m1_x_vel, m1_y_vel, m1_z_vel,
+               Input("graph-button", "n_clicks")])
+def run_sim(m1_mass, m2_mass, m3_mass, m1_x_pos, m1_y_pos, m1_z_pos,m1_x_vel, m1_y_vel, m1_z_vel,
                               m2_x_pos, m2_y_pos, m2_z_pos,m2_x_vel, m2_y_vel, m2_z_vel, 
                               m3_x_pos, m3_y_pos, m3_z_pos,m3_x_vel, m3_y_vel, m3_z_vel, n):
         
@@ -222,32 +217,16 @@ def fetch_data_from_user_input(m1_mass, m2_mass, m3_mass, m1_x_pos, m1_y_pos, m1
         xc, yc, zc=solved_func.y[12][::step], solved_func.y[14][::step],solved_func.y[16][::step]
         
         time=solved_func.t[::step]
-
-        data =np.array([xa, ya, za, xb, yb, zb, xc,yc, zc, time])
         
-        return(data)
-
-@app.callback(Output('graph_gen', 'children'), [Input('intermediate-value', 'data'),Input("graph-button", "n_clicks")])
-def graph_generator(data, n):
-      xa,ya,za=data[0], data[1], data[2]
-      xb,yb,zb=data[3], data[4], data[5]
-      xc,yc,zc=data[6], data[7], data[8]
-      time=data[9]
-
-      x_max=max([max(xa), max(xb), max(xc)])
-      x_min=min([min(xa), min(xb), min(xc)])
-
-      y_max=max([max(ya), max(yb), max(yc)])
-      y_min=min([min(ya), min(yb), min(yc)])
-
-      z_max=max([max(za), max(zb), max(zc)])
-      z_min=min([min(za), min(zb), min(zc)])
-      
-      time_max=max(time)
-      
-
-
-      if ctx.triggered_id == "graph-button":
+        
+        x_max=max([max(xa), max(xb), max(xc)])
+        x_min=min([min(xa), min(xb), min(xc)])
+        y_max=max([max(ya), max(yb), max(yc)])
+        y_min=min([min(ya), min(yb), min(yc)])
+        z_max=max([max(za), max(zb), max(zc)]) 
+        z_min=min([min(za), min(zb), min(zc)])
+        time_max=max(time)
+        if ctx.triggered_id == "graph-button":
            
            fig = go.Figure(data=[go.Scatter3d(x=xa, y=ya, z=za, 
                                               text = time,
@@ -321,7 +300,7 @@ def graph_generator(data, n):
                            }
            sliders = [
                     {
-                        "pad": {"b": 10, "t": 60},
+                        "pad": {"b": 10, "t": 30},
                         "len": 0.9,
                          "x": 0.1,
                         "y": 0,
@@ -336,9 +315,11 @@ def graph_generator(data, n):
                      }
                     ]
 
-           fig.update_layout(title='Position Graph of Three Masses',
-                     width=1000,
+           fig.update_layout(title='Position Graph of the Three Masses', title_font_size=23, title_x=0.3,title_xanchor='center', 
+            title_y=0.87, title_yanchor='bottom',
+                     width=900,
                      height=800,
+                     autosize=True,
                      scene=dict(
                           aspectmode='cube',
                           xaxis_title='x position (m)',

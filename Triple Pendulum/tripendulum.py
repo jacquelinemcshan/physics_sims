@@ -237,7 +237,7 @@ def graph(data_input,n):
                                title_y=0.87, title_yanchor='bottom')
              fig.update_xaxes(title_text='Position (m)')
              fig.update_yaxes(title_text='Position (m)')
-             fig.show()
+             
              return dcc.Graph(figure=fig)
     
 

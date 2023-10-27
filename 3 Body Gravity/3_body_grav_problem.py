@@ -200,7 +200,7 @@ def run_sim(m1_mass, m2_mass, m3_mass, m1_x_pos, m1_y_pos, m1_z_pos,m1_x_vel, m1
         def grav_body_solver(*args):
             y0=[xa_ini,v_xa_ini, ya_ini,v_ya_ini, za_ini, v_za_ini,xb_ini,v_xb_ini, yb_ini,v_yb_ini, zb_ini, v_zb_ini,
                 xc_ini,v_xc_ini, yc_ini,v_yc_ini, zc_ini, v_zc_ini]
-            tmax=5*10**5
+            tmax=5*10**5/2
             dt=0.1
             t = np.arange(0, tmax, dt)
             

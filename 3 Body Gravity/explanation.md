@@ -24,14 +24,14 @@ such that $i \neq j$.
 
 The kinetic energy is 
 $$
-T= \frac{1}{2}\sum_i m_i \dot{r}_i \text{.}
+T= \frac{1}{2}\sum_i m_i \dot{r}_i^2 \text{.}
 $$ 
 
 Thus, the Lagrangian is 
 $$ \begin{equation}
 \begin{split}
 L&=T-U\\
-&=\frac{1}{2}\sum_i m_i \dot{r}_i+\sum_{i}\sum_{j}\frac{Gm_i m_j}{r_{ij}} \text{.}
+&=\frac{1}{2}\sum_i m_i \dot{r}_i^2+\sum_{i}\sum_{j}\frac{Gm_i m_j}{r_{ij}} \text{.}
 \end{split}
 \end{equation}$$
 
@@ -42,15 +42,15 @@ $$\begin{equation}
 
 We will walk through how to find equations of motion for the x componets of the masses' motion. It boils down to applying the chain rule a few times. We will fix one $i$ and such that 
 
-$$L=\frac{1}{2}m_i \dot{r}_i+\sum_{j}\frac{Gm_i m_j}{r_{ij}} \text{.}$$
+$$L=\frac{1}{2}m_i \dot{r}_i^2+\sum_{j}\frac{Gm_i m_j}{r_{ij}} \text{.}$$
 
 We see that
 
 $$ 
 \begin{split}
 \frac{\partial}{\partial x_i}L &= \frac{\partial}{\partial x_i}
-\left(\frac{1}{2}m_i \dot{r}_i+\sum_{j}\frac{Gm_i m_j}{r_{ij}}\right)\\
-& = -\frac{\partial}{\partial x_i}\sum_{j}\frac{Gm_i m_j}{r_{ij}}\\
+\left(\frac{1}{2}m_i \dot{r}_i^2+\sum_{j}\frac{Gm_i m_j}{r_{ij}}\right)\\
+& = \frac{\partial}{\partial x_i}\sum_{j}\frac{Gm_i m_j}{r_{ij}}\\
 &=Gm_i\sum_j m_j\frac{x_i-x_j}{r^3_{ij}}\\
 &=Gm_i\sum_j \frac{m_j x_{ij}}{r^3_{ij}}
 \end{split}
@@ -58,6 +58,17 @@ $$
 
 and 
 
+$$
+\begin{split}
+\frac{d}{dt}\frac{\partial}{\partial \dot{q}_i}L
+&=\frac{d}{dt}\frac{\partial}{\partial \dot{q}_i}\left(\frac{1}{2}m_i \dot{r}^2_i+\sum_{j}\frac{Gm_i m_j}{r_{ij}}\right)\\
+&=\frac{d}{dt}\frac{\partial}{\partial \dot{q}_i}\left(\frac{1}{2}m_i \dot{r}^2_i\right)\\
+&=\frac{d}{dt}m_i \dot{r}_i\\
+&=m_i \ddot{r} \text{.}
+\end{split}
+$$
+
+Subbing in our derivatives, we find that 
 
 
 ## The Code

@@ -98,7 +98,7 @@ graph_layout= dbc.Card([dbc.CardHeader(html.H3(children="Graph of the Triple Pen
                    dbc.Button("Graph", className="me-1", id="graph-button-pend", n_clicks=0),
                    dbc.Button("Explanation and Code", className="me-1 mx-auto", id="code-button", href="https://github.com/jacquelinemcshan/physics_sims/wiki/Triple-Pendulum", external_link=True)], 
                    direction="horizontal", gap=2)),
-        html.Div(id="graph_gen_pend")])], class_name="min-vh-90 flex-grow-1"
+        html.Div(id="graph_gen_pend")], )], class_name="min-vh-90 flex-grow-1", 
         )
 ui_layout=dbc.Card([dbc.CardHeader(html.H3(children="Variables")),
     dbc.CardBody(dbc.Accordion([mass_1_input,mass_2_input,mass_3_input], always_open=True, class_name="flex-grow-1 overflow-scroll mb-3", style={"maxHeight": "75vh"}))])
@@ -232,13 +232,13 @@ def graph(data_input,n):
                                   )
                                   for k in range(0, len(x1), time_step)
                                     ],)
-             fig.update_layout(height=700, width=700, 
+             fig.update_layout(
                                title_font_size=23, title_x=0.48,title_xanchor='center', 
                                title_y=0.87, title_yanchor='bottom')
              fig.update_xaxes(title_text='Position (m)')
              fig.update_yaxes(title_text='Position (m)')
              
-             return dcc.Graph(figure=fig)
+             return dcc.Graph(figure=fig, style={"display": "flex", 'height': '50vw'})
     
 
 if __name__ == '__main__':

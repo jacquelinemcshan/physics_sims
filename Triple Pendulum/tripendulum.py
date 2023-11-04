@@ -137,7 +137,7 @@ def fetch_data_from_user_input(input_value, input_value2, input_value3, input_va
         L1,L2,L3=input_value4,input_value5, input_value6
         ini1,ini2,ini3=np.deg2rad(input_value7),np.deg2rad(input_value8), np.deg2rad(input_value9)
         M1=m1+m2+m3
-        M2=m1+m2
+        M2=m2+m3
         L=L1+L2+L3
 
     

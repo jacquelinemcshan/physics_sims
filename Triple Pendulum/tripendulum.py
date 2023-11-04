@@ -176,13 +176,14 @@ def fetch_data_from_user_input(input_value, input_value2, input_value3, input_va
         
         func=pendulum_solver()
         theta1, theta2, theta3 = func.y[0,:], func.y[2], func.y[4]
+        time=func.t
         x1=L1*np.sin(theta1)
         y1=-L1*np.cos(theta1)
         x2=x1+L2*np.sin(theta2)
         y2=y1-L2*np.cos(theta2)
         x3=x2+L3*np.sin(theta3)
         y3=y2-L3*np.cos(theta3)
-        positions=[theta1,theta2,theta3,x1,y1,x2,y2,x3,y3, L]
+        positions=[theta1,theta2,theta3,x1,y1,x2,y2,x3,y3, L, time]
         return(positions)
         
 @app.callback(Output('graph_gen_pend', 'children'),
@@ -193,11 +194,21 @@ def graph(data_input,n):
              x1, x2, x3=data_input[3], data_input[5], data_input[7]
              y1, y2, y3=data_input[4], data_input[6], data_input[8]
              L=data_input[9]
+             time=data_input[10]
              
              fig = go.Figure(data=[go.Scatter(
-                x=x1, y=y1, mode="lines",name='Mass 1', line=dict(color='blue'),showlegend=False),
-                    go.Scatter(x=x2, y=y2,  name='Mass 2',mode="lines", line=dict(color='red'),showlegend=False),
-                    go.Scatter(x=x3, y=y3, name='Mass 3', mode='lines', line=dict(color='green'), showlegend=False),
+                x=x1, y=y1, mode="lines",name='Mass 1', line=dict(color='blue'),showlegend=False, 
+                text = time, hovertemplate ='<i>x</i>: %{x:.3f} m <br>'+
+                                              '<i>y</i>: %{y:.3f} m <br>'+
+                                              '<i>time</i>: %{text:f} s'),
+                    go.Scatter(x=x2, y=y2,  name='Mass 2',mode="lines", line=dict(color='red'),showlegend=False,
+                                text = time, hovertemplate ='<i>x</i>: %{x:.3f} m <br>'+
+                                              '<i>y</i>: %{y:.3f} m <br>'+
+                                              '<i>time</i>: %{text:f} s'),
+                    go.Scatter(x=x3, y=y3, name='Mass 3', mode='lines', line=dict(color='green'), showlegend=False,
+                                text = time, hovertemplate ='<i>x</i>: %{x:.3f} m <br>'+
+                                              '<i>y</i>: %{y:.3f} m <br>'+
+                                              '<i>time</i>: %{text:f} s'),
                     go.Scatter(x=[0, y1, None, y1,y2, None,y2, y3],
                                y=[0, y1, None, y1,y2, None,y2, y3], 
                                mode="lines", showlegend=False),

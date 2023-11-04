@@ -183,7 +183,7 @@ def fetch_data_from_user_input(input_value, input_value2, input_value3, input_va
         y2=y1-L2*np.cos(theta2)
         x3=x2+L3*np.sin(theta3)
         y3=y2-L3*np.cos(theta3)
-        positions=[theta1,theta2,theta3,x1,y1,x2,y2,x3,y3, L, time]
+        positions=[theta1,theta2,theta3,x1,y1,x2,y2,x3,y3, L, m1, m2, m3, time,]
         return(positions)
         
 @app.callback(Output('graph_gen_pend', 'children'),
@@ -194,7 +194,8 @@ def graph(data_input,n):
              x1, x2, x3=data_input[3], data_input[5], data_input[7]
              y1, y2, y3=data_input[4], data_input[6], data_input[8]
              L=data_input[9]
-             time=data_input[10]
+             m1,m2,m3=data_input[10], data_input[11], data_input[12]
+             time=data_input[13]
              
              fig = go.Figure(data=[go.Scatter(
                 x=x1, y=y1, mode="lines",name='Mass 1', line=dict(color='blue'),showlegend=False, 
@@ -231,11 +232,19 @@ def graph(data_input,n):
                   frames=[go.Frame(
                        data=[go.Scatter(x=[0, x1[k], None,x1[k], x2[k], None, x2[k], x3[k]],
                                  y=[0, y1[k], None, y1[k], y2[k], None,y2[k], y3[k]], mode="lines", 
-                                 line=dict(color="black", width=1)),
+                                 line=dict(color="black", width=1), hovertemplate ='<i>x</i>: %{x:.3f} m <br>'+
+                                              '<i>y</i>: %{y:.3f} m <br>'),
                                 go.Scatter(x=[x1[k]],y=[y1[k]],mode="markers",name='Mass 1',
-                                             marker=dict(color="blue", size=5)), 
-                                go.Scatter(x=[x2[k]],  y=[y2[k]], name='Mass 2',mode="markers", marker=dict(color="red", size=5),),
-                                go.Scatter(x=[x3[k]], y=[y3[k]], name='Mass 3',mode="markers",marker=dict(color="green", size=5),)], 
+                                           
+                                             marker=dict(color="blue", size=5+(m1/24)*10),
+                                             hovertemplate ='<i>x</i>: %{x:.3f} m <br>'+
+                                              '<i>y</i>: %{y:.3f} m <br>'), 
+                                go.Scatter(x=[x2[k]],  y=[y2[k]], name='Mass 2',mode="markers", marker=dict(color="red", size=5+(m2/24)*10), 
+                hovertemplate ='<i>x</i>: %{x:.3f} m <br>'+
+                                              '<i>y</i>: %{y:.3f} m <br>'),
+                                go.Scatter(x=[x3[k]], y=[y3[k]], name='Mass 3',mode="markers",marker=dict(color="green", size=5+(m3/24)*10),
+               hovertemplate ='<i>x</i>: %{x:.3f} m <br>'+
+                                              '<i>y</i>: %{y:.3f} m <br>')], 
                                 name=str(k), 
                                 layout=go.Layout(annotations=[dict(xref="x domain", yref="y domain", x=1, y=1,
                                 showarrow=False, align='right',
